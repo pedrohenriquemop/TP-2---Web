@@ -1,0 +1,210 @@
+body{
+  background-image: url("pc-gif.gif");
+  background-size: cover;
+  margin: 0;
+}
+
+header{
+  background-image: url("circuito.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+header h1{
+  perspective: 400px;
+  font-family: 'Roboto Slab', serif;
+  font-size: 48px;
+  text-align: center;
+  font-weight: bold;
+  color: red;
+  padding: 20px;
+  text-shadow: 1px 1px 20px white;
+}
+
+header h1:hover{
+  cursor: pointer;
+}
+
+header h1:active{
+  animation: animar 1s ease-in-out alternate infinite;
+}
+
+nav ul{
+  background-image: url("textura-madeira.jpg");
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+nav ul li{
+  transition: transform 0.2s ease;
+  color: white;
+  font-size: 20px;
+  font-family: 'Roboto Slab', serif;
+  padding: 10px 40px 10px 10px;
+  display: inline-block;
+}
+
+nav ul li:hover{
+  text-shadow: 2px 2px 8px white;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+nav ul li:active{
+  transform: scale(1);
+}
+
+header{
+  border: 2px solid green;
+  background-color: blue;
+}
+
+#clicker{
+  float: left;
+  width: 400px;
+  height: 600px;
+  background-image: url("metal.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#central{
+  border-left: 2px solid white;
+  left: 400px;
+  position: relative;
+  width: 600px;
+  height: 600px;
+  background-image: url("pedras.jpg");
+  font-family: "Roboto Slab", sans-serif;
+  font-size: 40px;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 10px lightgray;
+  position: absolute;
+}
+
+#pc{
+  width: 300px;
+  transition: transform 0.2s ease;
+  padding: 30px;
+}
+
+#pc:hover{
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+#pc:active{
+  transform: scale(0.9);
+}
+
+#dinheiros{
+  text-align: center;
+  font-family: "Lucida Console", sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 2px 2px 10px lightgreen;
+}
+
+#dinheiro{
+  font-family: "Times New Roman", sans-serif;
+  font-size: 45px;
+  text-shadow: none;
+}
+
+#dinheiros img{
+  width: 20px;
+}
+
+#upgrades{
+  font-family: "Roboto Slab", sans-serif;
+  font-size: 40px;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 10px lightgray;
+  position: absolute;
+}
+
+#upgrades ul{
+  list-style: none;
+  font-size: 20px;
+  font-family: 'Lucida Console', sans-serif;
+}
+
+#upgrades ul li{
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid red;
+  background-color: red;
+  border-radius: 10px;
+  text-shadow: 2px 2px 10px black;
+  transition: transform 0.2s ease;
+}
+
+#upgrades ul li:hover{
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+#comprarPc{
+  border: 3px solid black;
+  text-align: center;
+  width: 500px;
+  margin: auto;
+  margin-top: 30px;
+  background-color: yellow;
+  padding: 10px;
+}
+
+#comprarPc:hover{
+  background-color: lightgreen;
+  border: 3px solid red;
+  cursor: pointer;
+}
+
+@keyframes animar {
+  from{
+    transform: rotateY(0deg) scale(1);
+  }
+  to{
+    transform: rotateY(720deg) scale(3.5);
+  }
+}
+
+#game{
+  position: relative;
+  width: 800px;
+  height: 500px;
+  margin: auto;
+  border: 1px solid red;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+#trabalho{
+  position: relative;
+  text-align: center;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 255, 0.5);
+  width: 300px;
+  height: 300px;
+}
+
+#trabalhoFeito{
+  font-size: 25px;
+  margin-top: 30px;
+  min-width: 100px;
+  min-height: 40px;
+}
+
+#nomeDoTrabalho{
+  color: red;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+*{
+  margin: 0;
+}
