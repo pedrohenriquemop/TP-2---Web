@@ -8,20 +8,23 @@ let dinheiroSpan = $('#dinheiro')
 let botaoPc = $('#pc')
 let valorDoClique = 0.01
 let dinheiro = 0.0
-let upgrades = $('#upgrades ul li')
+let upgrades = $('#upgrades li')
+let $precoUpgrades = $('#upgrades li span')
+let podeComprar = false
 
 refresh()
 
 function Pagar(e){
   if(dinheiro - parseFloat(e.currentTarget.dataset.custo) >= 0){
-    dinhero -= parseFloat(e.currentTarget.dataset.custo)
-    return 1;
+    dinheiro -= parseFloat(e.currentTarget.dataset.custo);
+    e.currentTarget.dataset.custo *= 1.6
+    refresh(e.currentTarget);
+    Add(e.currentTarget);
   }
-  else return 0;
 }
 
-function Add(e){
-  valorDoClique += parseFloat(e.currentTarget.dataset.add)
+function Add(obj){
+  valorDoClique += parseFloat(obj.dataset.add)
 }
 
 function Pc(e){
@@ -29,8 +32,12 @@ function Pc(e){
   refresh()
 }
 
-function refresh(){
+function refresh(obj){
   dinheiroSpan.html(dinheiro.toFixed(2))
+  let custos = document.querySelectorAll('.custoUpgrade')
+  for(let i = 0; i < custos.legth; i++){
+    custos[i].innerHTML = toString(parseFloat(custos[i].parentNode.dataset.custo).toFixed(2))
+  }
 }
-if(upgrades.click(Pagar)) upgrades.click(Add)
+upgrades.click(Pagar)
 botaoPc.click(Pc)
