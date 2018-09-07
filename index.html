@@ -18,7 +18,7 @@
       </nav>
     </header>
     <main>
-      <div id="clicker">
+      <div id="clicker" class="div">
         <img id='pc' src="pc-velho.png">
         <div id="dinheiros">
           <p>Tijão tem atualmente <span id='dinheiro'></span> contos na conta</p>
@@ -26,17 +26,58 @@
         </div>
       </div>
       <div id="central">
-        <h2>Upgrêides</h2>
-        <ul id="upgrades">
-          <li data-add="0.05" data-custo="0.05">Comprar 1MB de memória Rã adicional - <span class='custoUpgrade'></span></li>
-          <li data-add='50' data-custo='500'>Comprar GTX-1080 da enevíds - <span class='custoUpgrade'></span></li>
-          <li data-add='100' data-custo='1500'>Comprar I7 dual-core da intéu - <span class='custoUpgrade'></span></li>
+        <ul id="menu">
+          <li class="atual" data-mostra="upgrades">Upgrêides</li>
+          <li data-mostra="progs" class="oculto">Programadores</li>
+          <li data-mostra="portu" class="oculto">Portugol</li>
         </ul>
-      </div>
-      <div id='comprar-pcs'>
-        <h2>Comprando Pecês</h2>
+        <section class="div visivel sandro" id="upgrades">
+          <ul class="std-list">
+            <li data-add="0.01" data-custo="0.1" data-popopqtd="10" data-popopind="0">1MB de memória Rã adicional</li>
+            <li data-add='1' data-custo='10'>GTX-1080 da enevíds</li>
+            <li data-add='1000' data-custo='10000'>I7 dual-core da intéu</li>
+          </ul>
+        </section>
+        <section class="div sandro" id="progs">
+          <!--img src="portu.png" width="50" id="portu"-->
+          <ul class="std-list" data-autoclick>
+            <li data-add="0.1" data-custo="1">"Programador" de HTML</li>
+            <li data-add='10' data-custo='100'>Programador de C</li>
+            <li data-add='100' data-custo='1000'>Programador de JavaScript</li>
+            <li data-add='212.83' data-custo='4301' id="special" class="special portugol" data-popopqtd="1" data-popopind="1">
+              Programador de Portugol
+              <span class="seta" id="seta1">
+                <span class="medio"></span>
+              </span>
+              <span class="seta" id="seta2">
+                <span class="medio"></span>
+              </span>
+            </li>
+          </ul>
+        </section>
+        <section class="div sandro" id="portu">
+          <ul class="std-list">
+            <li data-add="0.05" data-custo="0.05">"Programador" de HTML</li>
+            <li data-add='50' data-custo='500'>Programador de C</li>
+            <li data-add='100' data-custo='1500'>Programador de JavaScript</li>
+            <li data-add='100' data-custo='1500' class="">Programador de Portugol</li>
+          </ul>
+        </section>
       </div>
     </main>
+    <div id="popops" class="oculto">
+      <div id="caxa" class="sans">
+        <section class="oculto" data-mostra="progs">
+          <h2>Aba "Programadores" desbloqueada!</h2>
+          <p>Parabéns, seu pecê agora tem memória rã suficiente para ligar! Você agora pode contratar programadores para usá-lo.</p>
+        </section>
+        <section class="oculto" data-mostra="portu">
+          <h2>Aba "Portugol" desbloqueada!!!!!</h2>
+          <p>Você poderá usufruir dessa ótima ferramenta didática para programadores iniciantes! Mas você vê imenso potencial nela, quem sabe pode se tornar algo ainda maior?</p>
+        </section>
+        <button id="oquei">OK</button>
+      </div>
+    </div>
     <script src="jquery-3.3.1.js"></script>
     <script src="script.js"></script>
   </body>
