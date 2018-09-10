@@ -1,5 +1,7 @@
 body{
   background-color: #3f5f7f;
+  position: relative;
+  overflow-x: hidden;
 }
 *{
   margin: 0;
@@ -75,11 +77,15 @@ main{
 main>:not(:last-child){
   border-right: 5px solid #3f5f7f;
 }
+main>*{
+  box-sizing: border-box;
+}
 
 #clicker{
   background-image: url("metal.jpg");
   background-repeat: no-repeat;
   background-size: cover;
+  min-width:33.333%;
 }
 
 #clicker p{
@@ -94,8 +100,12 @@ main>:not(:last-child){
   text-align: center;
   color: white;
   text-shadow: 2px 2px 10px lightgray;
+  min-width: 66.667%;
 }
 
+#div-pc{
+  position: relative;
+}
 #pc{
   width: 300px;
   transition: transform 0.2s ease;
@@ -160,6 +170,7 @@ main>:not(:last-child){
   font-size: 20px;
   font-family: 'Lucida Console', sans-serif;
   padding-left:0;
+  margin-top: -20px;
 }
 
 .std-list>li{
@@ -168,14 +179,27 @@ main>:not(:last-child){
   border-radius: 10px;
   text-shadow: 2px 2px 10px black;
   transition: transform 0.2s ease;
-}
-.std-list>li:not(:first-child){
-  margin-top: 20px;
+  user-select: none;
+  margin-top:20px;
 }
 
 .std-list>li:hover{
   transform: scale(1.1);
   cursor: pointer;
+}
+.std-list>li:active{
+  position: relative;
+  box-shadow: 0.6px 0.6px 6px 0 inset rgba(0, 0, 0, 0.5);
+}
+.std-list>li:active::before{
+  content: "";
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: inherit;
 }
 
 @keyframes animar {
@@ -222,23 +246,28 @@ main>:not(:last-child){
 
 /* Estatísticas das li's! */
 
-.sandro dl{
+div.descLi{
   font-size: 0.707em;
-  color:#3f3f3f;
+  color:black;
   text-shadow: none;
-  font-family: Helvetica;
+  font-family: sans-serif;
+}
+.descLi p{
+  margin-top:10px;
+}
+.descLi dl{
   margin-top:5px;
 }
-.sandro dl>*{
+.descLi dl>div{
   display: inline-block;
-  margin-top:5px;
+  margin: 5px 1.5em 0;
 }
-.sandro dt::after{
+.descLi dl>div>*{
+  display: inline;
+}
+.descLi dt::after{
   content: ": ";
-  white-space: pre-wrap;
-}
-.sandro dd:not(:last-child){
-  margin-right:3em;
+  white-space: pre;
 }
 
 
@@ -276,7 +305,7 @@ main>:not(:last-child){
 .sandro:not(.visivel){
   display: none !important;
 }
-#menu>.oculto{
+#menu>.oculto,.sandro li.oculto{
   display: none !important;
 }
 
@@ -455,4 +484,41 @@ main>:not(:last-child){
   right:0;
   background-color: rgba(0,0,0,0.1);
   z-index:1;
+}
+
+
+/* Barrinha de comprar vários */
+
+#comprarMts{
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: none;
+  color:white;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  margin-top:-10px;
+}
+#qwerty{
+  display: block;
+  margin-top:10px;
+  width:250px;
+}
+
+
+/* Pontinhos que ficam subindo */
+
+.numPt{
+  position: absolute;
+  font-size: 24px;
+  color:#00ff00;
+  text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+  font-family: sans-serif;
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 1s cubic-bezier(.5,.25,.75,.5), top 2s cubic-bezier(.25,.5,.5,.75);
+  opacity: 1;
 }

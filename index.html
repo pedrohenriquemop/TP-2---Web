@@ -19,32 +19,44 @@
     </header>
     <main>
       <div id="clicker" class="div">
-        <img id='pc' src="pc-velho.png">
+        <figure id="div-pc">
+          <img id='pc' src="pc-velho.png">
+        </figure>
         <div id="dinheiros">
-          <p>Tijão tem atualmente <span id='dinheiro'></span> contos na conta</p>
+          <p>Tijão tem atualmente <span id='dinheiro'>0.00</span> contos na conta</p>
           <img src="dinheiro.png"><img src="dinheiro.png"><img src="dinheiro.png"><img src="dinheiro.png">
         </div>
       </div>
       <div id="central">
         <ul id="menu">
-          <li class="atual" data-mostra="upgrades">Upgrêides</li>
+          <li data-mostra="upgrades">Upgrades</li>
+          <li class="atual" data-mostra="pecas">Peças</li>
           <li data-mostra="progs" class="oculto">Programadores</li>
           <li data-mostra="portu" class="oculto">Portugol</li>
         </ul>
-        <section class="div visivel sandro" id="upgrades">
+        <section class="div visivel sandro" id="pecas">
           <ul class="std-list">
-            <li data-add="0.01" data-custo="0.1" data-popopqtd="10" data-popopind="0">1MB de memória Rã adicional</li>
-            <li data-add='1' data-custo='10'>GTX-1080 da enevíds</li>
-            <li data-add='1000' data-custo='10000'>I7 dual-core da intéu</li>
+            <li data-add="0.01" data-custo="0.03" data-popopqtd="10" data-popopind="0" id="ra">1MB de memória Rã adicional</li>
+            <li data-add='1' data-custo='6' id="gtx">GTX-1080 da enevíds</li>
+            <li data-add='500' data-custo='24000'>I7 dual-core da intéu</li>
+          </ul>
+        </section>
+        <section class="div sandro" id="upgrades">
+          <ul class="std-list" data-diferente="up">
+            <li data-custo="80" data-desc="Suas rãs são 10x mais turbinadas.">Rãs DDR4</li>
+            <li data-custo='3600' data-desc="Multiplica por 5 o lucro produzido pelos programadores de HTML.">Curso de CSS</li>
+            <li data-custo="80000" data-desc="95% de desconto nas GTX 1080!">Compra em Massa</li>
+            <li data-custo='800000' data-desc="Cada programador seu aumenta o lucro de seu tipo de programador em 0.07%.">Trabalho em Equipe</li>
+            <li data-custo='2147483648' data-desc="Converta todos os seus programadores em programadores de Portugol!" class="portugol"><img src="portu.png" alt="Portugol" style="width:2em; vertical-align:middle"></li-->
           </ul>
         </section>
         <section class="div sandro" id="progs">
           <!--img src="portu.png" width="50" id="portu"-->
           <ul class="std-list" data-autoclick>
-            <li data-add="0.1" data-custo="1">"Programador" de HTML</li>
-            <li data-add='10' data-custo='100'>Programador de C</li>
-            <li data-add='100' data-custo='1000'>Programador de JavaScript</li>
-            <li data-add='212.83' data-custo='4301' id="special" class="special portugol" data-popopqtd="1" data-popopind="1">
+            <li data-add="0.2" data-custo="0.45" id="html">"Programador" de HTML</li>
+            <li data-add='20' data-custo='120'>Programador de C</li>
+            <li data-add='200' data-custo='2400'>Programador de JavaScript</li>
+            <li data-add='500' data-custo='9000' id="special" class="special portugol" data-popopqtd="1" data-popopind="1">
               Programador de Portugol
               <span class="seta" id="seta1">
                 <span class="medio"></span>
@@ -63,6 +75,10 @@
             <li data-add='100' data-custo='1500' class="">Programador de Portugol</li>
           </ul>
         </section>
+        <div id="comprarMts">
+          <div>Compras por clique: <span id="num">1</span></div>
+          <input type="range" value="1" min="1" max="31.63" step="0.01" id="qwerty">
+        </div>
       </div>
     </main>
     <div id="popops" class="oculto">
