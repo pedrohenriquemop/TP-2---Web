@@ -6,8 +6,8 @@ const trabalhos = ["consertar o pecê da tia da prima da irma da amiga da avo da
 "vender um programa de soma em portugolstudio"]
 let dinheiroSpan = $('#dinheiro')
 let botaoPc = $('#div-pc')
-let valorDoClique = 0.01,valorDoS=0.00;
-let dinheiro = 0.0
+let valorDoClique,valorDoS;
+let dinheiro;
 let upgrades = $('.sandro :not([data-diferente])>li');
 let comPopop=$("[data-popopind]");
 let qtdCompra=1;
@@ -48,6 +48,14 @@ let divPop=document.querySelector("#popops");
 let txtPop=document.querySelectorAll("#popops section");
 let btnPop=document.querySelector("#oquei");
 
+function unlock(li){
+  console.log(li);
+  if(li){
+    for(let i=0; i<lisMenu.length; i++){
+      if(lisMenu[i].dataset.mostra==li) lisMenu[i].classList.remove("oculto");
+    }
+  }
+}
 function abrePopop(ind){
   let li;
   for(let i=0; i<txtPop.length; i++){
@@ -58,12 +66,7 @@ function abrePopop(ind){
     }
   }
 
-  if(li){
-    for(let i=0; i<lisMenu.length; i++){
-      if(lisMenu[i].dataset.mostra==li) lisMenu[i].classList.remove("oculto");
-    }
-  }
-
+  unlock(li);
   divPop.classList.remove("oculto");
 }
 
@@ -74,6 +77,18 @@ btnPop.addEventListener("click",torradaMoida);
 
 
 // Adiciona estatísticas de compra nas li's!
+
+for(let i=0; i<upgrades.length; i++){
+  upgrades[i].innerHTML+="<div class='descLi'><dl><div><dt>Comprados</dt><dd class='comprados'></div></dd><div><dt>Custo</dt><dd class='custoUpgrade'></dd></div><div><dt>Lucro</dt><dd class='lucro'></dd></div></dl></div>";
+}
+const custos = $('.custoUpgrade'),
+  lucros=$('.lucro'),
+  comprados=$(".comprados");
+for(let i=0; i<upgrades.length; i++) {
+  upgrades[i].pontCusto=custos[i];
+  upgrades[i].pontLucro=lucros[i];
+  upgrades[i].pontCompr=comprados[i];
+}
 
 function comprar(obj){
   let float=parseFloat(obj.dataset.custo);
@@ -86,22 +101,6 @@ function comprar(obj){
   return ret;
 }
 
-for(let i=0; i<upgrades.length; i++){
-  upgrades[i].innerHTML+="<div class='descLi'><dl><div><dt>Comprados</dt><dd class='comprados'></div></dd><div><dt>Custo</dt><dd class='custoUpgrade'></dd></div><div><dt>Lucro</dt><dd class='lucro'></dd></div></dl></div>";
-  upgrades[i].comprados=0;
-  upgrades[i].custoSemArr=Number(upgrades[i].dataset.custo);
-  upgrades[i].inflacao=upgrades[i].custoSemArr/10;
-  upgrades[i].contribLucro=0;
-}
-const custos = $('.custoUpgrade'),
-  lucros=$('.lucro'),
-  comprados=$(".comprados");
-for(let i=0; i<upgrades.length; i++) {
-  upgrades[i].pontCusto=custos[i];
-  upgrades[i].pontLucro=lucros[i];
-  upgrades[i].pontCompr=comprados[i];
-  refresh(upgrades[i]);
-}
 
 function Pagar(e){
   let sht=e.currentTarget;
@@ -111,7 +110,6 @@ function Pagar(e){
     refresh(sht);
   }
 }
-
 
 function Add(obj){
   let thing=parseFloat(obj.dataset.add)*qtdCompra;
@@ -138,6 +136,13 @@ function refresh(obj){
   refreshCusto(obj);
   obj.pontLucro.innerHTML = parseFloat(obj.dataset.add).toFixed(2)+" contos";
   obj.pontCompr.innerHTML = obj.comprados;
+}
+
+function refreshAll(){
+  for(let i=0; i<upgrades.length; i++){
+    refresh(upgrades[i]);
+  }
+  dinheiroSpan.html(dinheiro.toFixed(2));
 }
 
 upgrades.click(Pagar)
@@ -215,10 +220,9 @@ const funcoesUps=[
     mult(document.querySelectorAll("#html"),5);
   },
   function(){
-    let chosen=document.querySelectorAll("#gtx");
-    chosen[0].custoSemArr/=100;
-    chosen[0].inflacao/=100;
-    mult(chosen,1);
+    let chosen=document.querySelector("#gtx");
+    chosen.inflacao/=20;
+    refresh(chosen);
   },
   function(){
     let chosen=document.querySelectorAll("#progs li");
@@ -246,15 +250,110 @@ const funcoesUps=[
   }
 ];
 
+function aplicarUp(i){
+  funcoesUps[i]();
+  ups[i].classList.add("oculto");
+}
+
 for(let i=0; i<ups.length; i++){
   ups[i].innerHTML+="<div class='descLi'><p>"+ups[i].dataset.desc+"</p><dl><div><dt>Custo</dt><dd>"+ups[i].dataset.custo+" contos</dd></div></dl></div>";
   ups[i].addEventListener("click",function(){
     if(comprar(this)){
-      funcoesUps[i]();
-      this.classList.add("oculto");
+      aplicarUp(i);
     }
   });
 }
+
+
+// Save
+
+let saveBtn=document.querySelector("#save");
+function save(){
+  localStorage.setItem("dinheiro",dinheiro);
+  localStorage.setItem("valorDoClique",valorDoClique);
+  localStorage.setItem("valorDoS",valorDoS);
+
+  let vdo=[];
+  for(let i=0; i<upgrades.length; i++){
+    let a=upgrades[i];
+    vdo[i]={
+      custoSemArr: a.custoSemArr,
+      comprados:a.comprados,
+      contribLucro: a.contribLucro,
+      inflacao: a.inflacao,
+    };
+  }
+  localStorage.setItem("vdo",JSON.stringify(vdo));
+
+  let upsComprados=[];
+  for(let i=0; i<ups.length; i++){
+    if(ups[i].classList.contains("oculto")){
+      upsComprados.push(i);
+    }
+  }
+  localStorage.setItem("ups",JSON.stringify(upsComprados));
+}
+
+saveBtn.addEventListener("click",save);
+
+
+// Reset
+
+let resetBtn=document.querySelector("#reset")
+resetBtn.addEventListener("click",function () {
+  zera();
+  localStorage.clear();
+  refreshAll();
+});
+
+
+// Load
+
+function zera(){
+  for(let i=0; i<upgrades.length; i++){
+    upgrades[i].comprados=0;
+    upgrades[i].custoSemArr=Number(upgrades[i].dataset.custo);
+    upgrades[i].inflacao=upgrades[i].custoSemArr/10;
+    upgrades[i].contribLucro=0;
+  }
+  valorDoClique = 0.01;
+  valorDoS=0.00;
+  dinheiro = 0.0;
+}
+
+function load(){
+  let moni=localStorage.getItem("dinheiro");
+  if(moni!=null){
+    dinheiro=Number(moni);
+    valorDoClique = Number(localStorage.getItem("valorDoClique"));
+    valorDoS=Number(localStorage.getItem("valorDoS"));
+    let vdo=JSON.parse(localStorage.getItem("vdo"));
+    for(let i=0; i<upgrades.length; i++){
+      upgrades[i].comprados=vdo[i].comprados;
+      upgrades[i].custoSemArr=vdo[i].custoSemArr;
+      upgrades[i].inflacao=vdo[i].inflacao;
+      upgrades[i].contribLucro=vdo[i].contribLucro;
+    }
+
+    // Aplica upgrades já comprados
+    let iuc=JSON.parse(localStorage.getItem("ups"));
+    for(let i=0; i<iuc.length; i++){
+      aplicarUp(iuc[i]);
+    }
+
+    for(let i=0; i<comPopop.length; i++){
+      if(comPopop[i].comprados>=Number(comPopop[i].dataset.popopqtd)){
+        comPopop[i].dataset.popopqtd="jafoi";
+        unlock(txtPop[i].dataset.mostra);
+      }
+    }
+  }
+  else {
+    zera();
+  }
+}
+load();
+refreshAll();
 
 
 // Setinha!!!
@@ -265,8 +364,10 @@ let setas=document.querySelectorAll(".seta");
 let parar;*/
 
 function remover(){
-  liEspecifica.classList.remove("special");
-  liEspecifica.removeEventListener("click",remover);
+  if(this.comprados>=1||dinheiro>=this.dataset.custo){
+    liEspecifica.classList.remove("special");
+    liEspecifica.removeEventListener("click",remover);
+  }
 }
 liEspecifica.addEventListener("click",remover);
 
@@ -306,3 +407,5 @@ ele.addEventListener("change",function(){
     refreshCusto(upgrades[i]);
   }
 });
+
+// Event.preventDefault
