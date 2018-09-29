@@ -5,16 +5,23 @@
     <title>Tio João PCs</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Diplomata+SC" rel="stylesheet">
   </head>
   <body>
     <header>
       <h1>Tio João PCs</h1>
       <ul>
+
         <li id="stats">Estatísticas</li><li id="conqs">Conquistas</li><li id="save">Salvar</li><li id="reset">Reiniciar</li><li id="sobre">Sobre</li>
       </ul>
     </header>
     <main>
       <div id="clicker" class="div">
+        <div id="spinnerContainer">
+          <img src="aleatoriedades/spinner.png" id="spinner" class="oculto">
+          <img id="fogo" class="oculto" src="aleatoriedades/fogo.gif">
+        </div>
+        <button id="tormenta" class="oculto">Ativar a <em>Tormenta do Spinner</em></button>
         <figure id="div-pc">
           <img id='pc' src="pc-velho.png">
         </figure>
@@ -26,18 +33,24 @@
       <div id="central">
         <ul id="menu">
           <li data-mostra="upgrades">Upgrades</li>
+          <li data-mostra="aleatoriedades">Aleatoriedades</li>
           <li class="atual" data-mostra="pecas">Peças</li>
           <li data-mostra="progs" class="oculto">Programadores</li>
           <li data-mostra="portu" class="oculto">Portugol</li>
         </ul>
-        <section class="div visivel sandro" id="pecas">
+        <section class="div visivel abaDeProdutos" id="pecas">
           <ul class="std-list">
-            <li data-add="0.01" data-custo="0.03" data-popopqtd="10" data-popopind="0" id="ra">1MB de memória Rã adicional</li>
+            <li data-add="0.01" data-custo="0.03" data-qtdpopup="10" data-indicepopup="0" id="ra">1MB de memória Rã adicional</li>
             <li data-add='1' data-custo='6' id="gtx">GTX-1080 da enevíds</li>
             <li data-add='500' data-custo='24000'>I7 dual-core da intéu</li>
           </ul>
         </section>
-        <section class="div sandro" id="upgrades">
+        <section class="div abaDeProdutos" id="aleatoriedades">
+          <ul class="std-list" data-diferente="aleat">
+            <li data-desc="???????????" data-custo="100">????????????</li>
+          </ul>
+        </section>
+        <section class="div abaDeProdutos" id="upgrades">
           <ul class="std-list" data-diferente="up">
             <li data-custo="80" data-desc="Suas rãs são 10x mais turbinadas.">Rãs DDR4</li>
             <li data-custo='3600' data-desc="Multiplica por 5 o lucro produzido pelos programadores de HTML.">Curso de CSS</li>
@@ -46,13 +59,13 @@
             <li data-custo='2147483648' data-desc="Converta todos os seus programadores em programadores de Portugol!" class="portugol"><img src="portu.png" alt="Portugol" style="width:2em; vertical-align:middle"></li-->
           </ul>
         </section>
-        <section class="div sandro" id="progs">
+        <section class="div abaDeProdutos" id="progs">
           <!--img src="portu.png" width="50" id="portu"-->
           <ul class="std-list" data-autoclick>
             <li data-add="0.2" data-custo="0.45" id="html">"Programador" de HTML</li>
             <li data-add='20' data-custo='120'>Programador de C</li>
             <li data-add='200' data-custo='2400'>Programador de JavaScript</li>
-            <li data-add='500' data-custo='9000' id="special" class="special portugol" data-popopqtd="1" data-popopind="1">
+            <li data-add='500' data-custo='9000' id="special" class="special portugol" data-qtdpopup="1" data-indicepopup="1">
               Programador de Portugol
               <span class="seta" id="seta1">
                 <span class="medio"></span>
@@ -63,7 +76,7 @@
             </li>
           </ul>
         </section>
-        <section class="div sandro" id="portu">
+        <section class="div abaDeProdutos" id="portu">
           <ul class="std-list">
             <li data-add="0.05" data-custo="0.05">"Programador" de HTML</li>
             <li data-add='50' data-custo='500'>Programador de C</li>
@@ -73,12 +86,12 @@
         </section>
         <div id="comprarMts">
           <div>Compras por clique: <span id="num">1</span></div>
-          <input type="range" value="1" min="1" max="31.63" step="0.01" id="qwerty">
+          <input type="range" value="1" min="1" max="31.63" step="0.01" id="qtosComprar">
         </div>
       </div>
     </main>
-    <div id="popops" class="oculto fundoPop">
-      <div id="caxa" class="caxaPop ultimoMargem0 sans">
+    <div id="unlockPopup" class="pseudoOculto fundoPop">
+      <div class="caxaPop ultimoMargem0 sans">
         <section class="oculto" data-mostra="progs">
           <h2>Aba "Programadores" desbloqueada!</h2>
           <p>Parabéns, seu pecê agora tem memória rã suficiente para ligar! Você agora pode contratar programadores para usá-lo.</p>
@@ -92,7 +105,7 @@
         </div>
       </div>
     </div>
-    <div class="fundoPop oculto" id="sobrePop">
+    <div class="fundoPop pseudoOculto" id="sobrePop">
       <div class="caxaPop sans ultimoMargem0Filhos">
         <button class="fechar jsfechar">×</button>
         <h2>Desenvolvedores</h2>

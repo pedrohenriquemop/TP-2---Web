@@ -288,10 +288,10 @@ div.descLi{
   background-color: #ffbfbf;
 }
 
-.sandro:not(.visivel){
+.abaDeProdutos:not(.visivel){
   display: none !important;
 }
-#menu>.oculto,.sandro li.oculto{
+.oculto{
   display: none !important;
 }
 
@@ -376,11 +376,14 @@ div.descLi{
 
 /* Popups! */
 
-.fundoPop.oculto{
-  visibility: hidden !important;
+.pseudoOculto{
+  visibility: hidden;
   opacity: 0 !important;
 }
-#popops section.oculto{
+#unlockPopup section.oculto{
+  display: none !important;
+}
+#spinner.oculto{
   display: none !important;
 }
 
@@ -430,7 +433,7 @@ div.descLi{
   box-shadow: 4px 4px 4px 0 rgba(0,0,0,0.5);
   padding:16px 24px;
 }
-#popops>.caxaPop{
+#unlockPopup>.caxaPop{
   width:300px;
 }
 
@@ -511,7 +514,7 @@ table{
   margin-bottom: 40px;
   margin-top:-10px;
 }
-#qwerty{
+#qtosComprar{
   display: block;
   margin-top:10px;
   width:250px;
@@ -578,4 +581,39 @@ table{
   right:0;
   background-color: rgba(0,0,0,0.1);
   z-index:1;
+}
+
+#spinnerContainer{
+  position: relative;
+}
+
+#spinner{
+  z-index: 1;
+  opacity: 0.95;
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+#fogo{
+  z-index: 0;
+  width: 230px;
+  position: absolute;
+  top: -80px;
+  left: -60px;
+  opacity: 0.7;
+}
+
+#tormenta{
+  margin: 15px;
+  padding: 2px;
+}
+
+#tormenta em:hover{
+  color: red;
+  cursor: pointer;
+}
+
+#tormenta em{
+  font-family: "Diplomata SC", sans-serif;
 }
