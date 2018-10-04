@@ -20,6 +20,28 @@ let nAtivouCronometro=true;
 
 // Contagem de tempo
 
+function criaNumerinho(cor,elPai,num){
+  let x=document.createElement("span");
+  x.classList.add("numPt");
+  x.style.color=cor;
+  elPai.appendChild(x);
+  x.innerHTML="+"+num.formata(2);
+  return x;
+}
+
+function posicionaNumerinho(x,left,top){
+  x.style.top=top+"px";
+  x.style.left=left+"px";
+  setTimeout(function () {
+    x.style.top=top-120+"px";
+  },20);
+  x.style.opacity="0";
+
+  setTimeout(function(){
+    x.remove();
+  },1000);
+}
+
 let pararJogo;
 
 function setaTempo(){ /* Retoma contagem de tempo e lucro por segundo. */
@@ -29,20 +51,8 @@ function setaTempo(){ /* Retoma contagem de tempo e lucro por segundo. */
     if(valorDoSeg){
       dinheiro+=valorDoSeg;
       mudaDin();
-
-      let x=document.createElement("span");
-      x.classList.add("numPt");
-      x.style.color="#00dfdf";
-      divPc.append(x);
-      x.innerHTML="+"+valorDoSeg.formata(2);
-      let top=(botaoPc.height()-x.offsetHeight)/2;
-      x.style.top=top+"px";
-      x.style.left=(botaoPc.width()-x.offsetWidth)/2+"px";
-      x.style.top=top-120+"px";
-      x.style.opacity="0";
-      setTimeout(function(){
-        x.remove();
-      },1000);
+      let x=criaNumerinho("#00dfdf",divPc[0],valorDoSeg);
+      posicionaNumerinho(x,(botaoPc[0].offsetWidth-x.offsetWidth)/2,(botaoPc[0].offsetHeight-x.offsetHeight)/2);
     }
   },1000);
 }
@@ -61,16 +71,40 @@ setaTempo();
 let achClicks=0;
 let divsAtualmente=0;
 
+function fecharOnclick(x){
+  x.style.opacity="0";
+  //removeEventListener("click",fecharOnclick);
+  setTimeout(function(){
+    x.remove();
+  },100);
+}
+
 function achievementUnlock(conq){
   conq.tem=true;
+  conq.el.classList.add("desbloqueada");
+  console.log(conq.el);
 
-  /*let x=document.createElement("section");
-  x.className="sans caxaPop ach";
-  x.innerHTML="<h2>Conquista desbloqueada!</h2>\
-  <h3>"+conq.nom+"</h3>\
-  <p>"+conq.dsc+"</p>\
-  <div class='btn1 right'><button>VER</button></div>";
-  document.body.appendChild(x);*/
+  let x=document.createElement("div");
+  x.className="ach pendingFade";
+  x.innerHTML="<section class='ultimoMargem0 caxaPop sans'>\
+  <button class='fechar' onclick='fecharOnclick(this.parentNode.parentNode)'>×</button>\
+  <h3 style='margin-right:28px'>"+conq.nom+"</h3>\
+  <p>"+conq.dsc+"</p></section>";
+  document.body.appendChild(x);
+
+  function eventoX(){
+    x.classList.remove("pendingFade");
+    x.removeEventListener("mousemove",eventoX);
+  }
+
+  x.addEventListener("mousemove",eventoX);
+
+  setTimeout(function(){
+    if(x.classList.contains("pendingFade")){
+      //removeEventListener("click",fecharOnclick);
+      x.remove();
+    }
+  },3000);
 }
 
 
@@ -135,6 +169,30 @@ for(let i=0; i<conqs[0].length; i++){
 }
 for(let i=0; i<conqs[1].length; i++){
   conqs[1][i].tem=false;
+}
+
+
+// Lista conquistas
+
+let conqsUl=document.querySelector("#listaConqs");
+let conqsLi=document.querySelector("#conqs"),conqsPop=document.querySelector("#conqsPop");
+
+conqsLi.addEventListener("click",function () {
+  abre(conqsPop);
+});
+
+for(let i=0; i<2; i++){
+  for(let j=0; j<conqs[i].length; j++){
+    let x=conqs[i][j].el=document.createElement("li");
+
+    x.innerHTML="<section><h3>"+conqs[i][j].nom+"</h3><p>"+conqs[i][j].dsc+"</p></section>";
+    if(i==1){
+      x.innerHTML+="<!--Seu raquerzinho enxerido (para raquear mais ainda aperte F12, vá no console e escreva \"dinheiro=100000000000000000000000000000000\")--><section class='inicial'><h3>Conquista oculta</h3><p>Não vou te falar o que tem que fazer para desbloquear essa conquista! Nem adianta inspecionar pra saber!</p></section>";
+      x.classList.add("nVouTeFalar");
+    }
+
+    conqsUl.appendChild(x);
+  }
 }
 
 
@@ -302,19 +360,8 @@ upgrades.click(Pagar);
 
 botaoPc.click(function(e){
   Pc();
-
-  let x=document.createElement("span");
-  x.classList.add("numPt");
-  document.body.appendChild(x);
-  x.innerHTML="+"+valorDoClique.formata(2);
-  let top=e.pageY-x.offsetHeight/2;
-  x.style.top=top+"px";
-  x.style.left=e.pageX-x.offsetWidth/2+"px";
-  x.style.top=top-120+"px";
-  x.style.opacity="0";
-  setTimeout(function(){
-    x.remove();
-  },1000);
+  let x=criaNumerinho("#00ff00",document.body,valorDoClique);
+  posicionaNumerinho(x,e.pageX-x.offsetWidth/2,e.pageY-x.offsetHeight/2);
 });
 
 comPopop.click(function(e){ /* Se a quantidade do produto for maior que seu atributo "qtdpopup", abre seu popup e desbloqueia uma
@@ -645,7 +692,7 @@ let girando = 1;
 let tormenta = 0;
 let tormentaOff = 0;
 let rodamento=0;
-let girarFunc;
+let girarFunc,numsDoidoes;
 
 const funcoesAleatorias = [ // array com funcoes para as aleatoriedades, me inspirei na de la de cima tambem
   function(){
@@ -673,15 +720,16 @@ function giraSpinner(){
     girando = 0;
     girarFunc =setInterval(function(){
       spinnerImg.style.transform="rotateZ("+rodamento+"deg)";
-      rodamento+=7;
-      if(tormenta){
-        spanTormenta();
-      }
-    }, 1);
+      rodamento+=19;
+    }, 33);
+    if(tormenta){
+      numsDoidoes=setInterval(spanTormenta,33);
+    }
   }
   else{
     girando = 1;
     clearInterval(girarFunc);
+    clearInterval(numsDoidoes);
   }
 }
 
@@ -697,16 +745,23 @@ function ativaTormenta(e){
     fogoImg.classList.remove("oculto")
     tormenta = 1;
     spinnerImg.style.backgroundImage = "aleatoriedades/url(fogo.gif)"
+
     setTimeout(function(){
       spinnerImg.style.backgroundImage = ""
       fogoImg.classList.add("oculto")
       tormentaButton.innerHTML = "A <em>Tormenta do Spinner</em> está carregando"
       tormenta = 0;
+      clearInterval(numsDoidoes);
     }, 30000)
+
     setTimeout(function(){
       tormentaOff = 0
       tormentaButton.innerHTML = "Ativar a <em>Tormenta do Spinner</em>"
     }, 60000);
+
+    if(girando==0){
+      numsDoidoes=setInterval(spanTormenta,33);
+    }
   }
   else if(tormenta == 0){
     alert('ta carregando po calma ai')
@@ -714,21 +769,10 @@ function ativaTormenta(e){
 }
 
 function spanTormenta(e){
-  let valorTormenta = parseFloat((valorDoClique / 20).toFixed(2));
+  let valorTormenta = Math.round(valorDoClique*100)/2000;
   if(valorTormenta < 0.05) valorTormenta = 0.05;
   dinheiro+=valorTormenta;
   mudaDin();
-  let x=document.createElement("span");
-  x.classList.add("numPt");
-  x.style.color="#ff0000";
-  divPc.append(x);
-  x.innerHTML="+"+valorTormenta.formata(2);
-  let top=(botaoPc.height()-x.offsetHeight)/2;
-  x.style.top=top+"px";
-  x.style.left=(botaoPc.width()-x.offsetWidth)/2+"px";
-  x.style.top=top-120+"px";
-  x.style.opacity="0";
-  setTimeout(function(){
-    x.remove();
-  },100);
+  let x=criaNumerinho("#ff0000",divPc[0],valorTormenta);
+  posicionaNumerinho(x,(botaoPc[0].offsetWidth-x.offsetWidth)*Math.sqrt(Math.random()*Math.random()),(botaoPc[0].offsetHeight-x.offsetHeight)*Math.sqrt(Math.random()*Math.random()));
 }

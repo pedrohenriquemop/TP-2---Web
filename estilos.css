@@ -412,6 +412,12 @@ div.descLi{
   text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
   margin-bottom: 0.66667em;
 }
+.sans h3{
+  font-family: "Consolas",monospace;
+  font-size: 1.333em;
+  color:red;
+  margin-bottom: 0.5em;
+}
 
 .fundoPop{
   position: fixed;
@@ -455,7 +461,7 @@ div.descLi{
   top:4px;
   margin-bottom:-20px;
   margin-left: auto;
-  margin-right: -4px;
+  margin-right: -8px;
 }
 .fechar:hover{
   background-color: #df1f1f;
@@ -583,13 +589,16 @@ table{
   z-index:1;
 }
 
+
+/* Aleatoriedades */
+/* Comentários são legais */
+
 #spinnerContainer{
   position: relative;
 }
 
 #spinner{
   z-index: 1;
-  opacity: 0.95;
   position: relative;
   width: 120px;
   height: 120px;
@@ -616,4 +625,135 @@ table{
 
 #tormenta em{
   font-family: "Diplomata SC", sans-serif;
+}
+
+
+/* Conquistas */
+
+@keyframes moveIn {
+  0%{
+    transform: translateY(100%);
+    bottom:-24px;
+  }
+  100%{
+    transform: translateY(0);
+    bottom:20px;
+  }
+}
+
+.ach{
+  position: fixed;
+  right:20px;
+  animation: moveIn 250ms linear forwards;
+  max-width: 320px;
+}
+.ach>.caxaPop{
+  padding:12px 16px;
+}
+.ach::before{
+  position: absolute;
+  background-color: #df7f1f;
+  top:4px;
+  right:0;
+  transform: translateY(-100%);
+  content: "Conquista desbloqueada!";
+  color:white;
+  font-weight: bold;
+  padding: 4px 8px 6px;
+  font-family: monospace;
+  font-size: 1.2em;
+  border-radius: 8px 8px 0 0;
+  z-index: -1;
+  box-shadow: 0 0 4px 0 inset rgba(0,0,0,0.5);
+}
+
+
+@keyframes fade {
+  0%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+
+.ach.pendingFade{
+  animation: moveIn 250ms linear forwards,fade 2s linear 1s forwards;
+}
+.ach:not(.pendingFade){
+  transition: opacity 100ms linear;
+}
+
+
+/* popup conquistas */
+
+#conqsPop>.caxaPop{
+  max-width: 750px;
+}
+#listaConqs{
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  list-style-type: none;
+  margin: 0 -8px -16px; /* Gambiarra da margem negativa para counterar o padding das lis */
+}
+#listaConqs>li{
+  width: 33.33333%;
+  box-sizing: border-box;
+  margin: 0;
+  padding:0 8px 16px;
+}
+#listaConqs>li>section{
+  background-color: rgba(63,63,191,0.2);
+  padding: 8px 12px;
+  border-radius: 10px;
+  height: 100%;
+  box-sizing:border-box;
+}
+
+#listaConqs>.nVouTeFalar>section{
+  background-color: rgba(127,127,127,0.2);
+}
+.nVouTeFalar:not(.desbloqueada)>:not(.inicial){
+  display: none;
+}
+.nVouTeFalar.desbloqueada>.inicial{
+  display: none;
+}
+.nVouTeFalar:not(.desbloqueada) p{
+  color:#7f7f7f;
+  font-style: italic;
+}
+
+#listaConqs>.desbloqueada>section{
+  background-color: rgba(63,191,63,0.2);
+  position: relative;
+}
+#listaConqs>.desbloqueada>section>*{
+  z-index: 1;
+}
+/*#listaConqs>.desbloqueada>section::before{
+  content: "✓";
+  position: absolute;
+  font-size: 100px;
+  font-weight: bold;
+  top:10px;
+  right:15px;
+  line-height: 1;
+  z-index: 0;
+  color:rgba(63,191,63,0.4);
+}*/
+
+#listaConqs>.desbloqueada>section::after{
+  content: "Desbloqueada!";
+  margin-top:0.5em;
+  color:#007f00;
+  display: block;
+}
+
+#listaConqs>:not(.desbloqueada):not(.nVouTeFalar)>section::after{
+  content: "Ainda não desbloqueada.";
+  margin-top:0.5em;
+  color:#00007f;
+  display: block;
 }
