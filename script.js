@@ -2,7 +2,7 @@ let dinheiroSpan = $('#dinheiro');
 let botaoPc = $('#pc');
 let divPc = $('#div-pc');
 let valorDoClique,valorDoSeg;
-let dinheiro;
+let dinheiro,dinAnterior;
 let upgrades = $('.abaDeProdutos :not([data-diferente])>li'); /* "Diferente" é um atributo que pode ser incluído nos elementos UL
 para indicar que as opções de compra dentro dele não vão ter o comportamento padrão. As peças e os programadores têm esse
 comportamento, enquanto os upgardes não, pois eles têm peculiaridades como poderem ser comprados apenas uma vez, não
@@ -14,8 +14,16 @@ elemento for maior ou igual ao valor do seu atributo "qtdpopup". Voltando a essa
 variável todos os produtos que tenham um popup vinculado a ele (até então, só as memórias rã e o programador de Portugol). */
 let qtdCompra=1; /* Quantos produtos estão sendo comprados por clique. Seu valor pode ser alterado pelo usuário através do input
 de id "qtosComprar". */
-let dinGasto,tempo; /* Variáveis que guardam o tempo de jogo e todo o dinheiro gasto. */
+let dinGasto,tempo,clicksDados; /* Variáveis que guardam o tempo de jogo e todo o dinheiro gasto. */
+let clicksPS;
 let nAtivouCronometro=true;
+
+
+// Pegar custo inicial
+
+for(let i=0; i<upgrades.length; i++){
+  upgrades[i].custoInicial=+upgrades[i].dataset.custo;
+}
 
 
 // Contagem de tempo
@@ -32,9 +40,6 @@ function criaNumerinho(cor,elPai,num){
 function posicionaNumerinho(x,left,top){
   x.style.top=top+"px";
   x.style.left=left+"px";
-  setTimeout(function () {
-    x.style.top=top-120+"px";
-  },20);
   x.style.opacity="0";
 
   setTimeout(function(){
@@ -49,8 +54,7 @@ function setaTempo(){ /* Retoma contagem de tempo e lucro por segundo. */
     tempo++;
 
     if(valorDoSeg){
-      dinheiro+=valorDoSeg;
-      mudaDin();
+      mudaDin(valorDoSeg);
       let x=criaNumerinho("#00dfdf",divPc[0],valorDoSeg);
       posicionaNumerinho(x,(botaoPc[0].offsetWidth-x.offsetWidth)/2,(botaoPc[0].offsetHeight-x.offsetHeight)/2);
     }
@@ -62,50 +66,6 @@ function pausa(){
 }
 
 setaTempo();
-
-
-// Variáveis conquistas
-
-/* ESTA FUNÇÃO AINDA ESTÁ EM DESENVOLVIMENTO. */
-
-let achClicks=0;
-let divsAtualmente=0;
-
-function fecharOnclick(x){
-  x.style.opacity="0";
-  //removeEventListener("click",fecharOnclick);
-  setTimeout(function(){
-    x.remove();
-  },100);
-}
-
-function achievementUnlock(conq){
-  conq.tem=true;
-  conq.el.classList.add("desbloqueada");
-  console.log(conq.el);
-
-  let x=document.createElement("div");
-  x.className="ach pendingFade";
-  x.innerHTML="<section class='ultimoMargem0 caxaPop sans'>\
-  <button class='fechar' onclick='fecharOnclick(this.parentNode.parentNode)'>×</button>\
-  <h3 style='margin-right:28px'>"+conq.nom+"</h3>\
-  <p>"+conq.dsc+"</p></section>";
-  document.body.appendChild(x);
-
-  function eventoX(){
-    x.classList.remove("pendingFade");
-    x.removeEventListener("mousemove",eventoX);
-  }
-
-  x.addEventListener("mousemove",eventoX);
-
-  setTimeout(function(){
-    if(x.classList.contains("pendingFade")){
-      //removeEventListener("click",fecharOnclick);
-      x.remove();
-    }
-  },3000);
-}
 
 
 // Menu!
@@ -140,7 +100,49 @@ que você inventou. */
   });
 
 
-// Conquistas. EM DESENVOLVIMENTO
+// Funções conquistas
+
+function fecharOnclick(x){
+  x.style.opacity="0";
+  //removeEventListener("click",fecharOnclick);
+  setTimeout(function(){
+    x.remove();
+  },100);
+}
+
+function achievementUnlock(conq){
+  if(conq.tem) return;
+  conq.tem=true;
+  conq.el.classList.add("desbloqueada");
+
+  conqsObtidas++;
+  conqSpans[0].innerHTML=conqsObtidas;
+
+  let x=document.createElement("div");
+  x.className="ach pendingFade";
+  x.innerHTML="<section class='ultimoMargem0 sans'>\
+  <button class='fechar' onclick='fecharOnclick(this.parentNode.parentNode)'>×</button>\
+  <h3 style='margin-right:28px'>"+conq.nom+"</h3>\
+  <p>"+conq.dsc+"</p></section>";
+  document.body.appendChild(x);
+
+  function eventoX(){
+    x.classList.remove("pendingFade");
+    x.removeEventListener("mousemove",eventoX);
+  }
+
+  x.addEventListener("mousemove",eventoX);
+
+  setTimeout(function(){
+    if(x.classList.contains("pendingFade")){
+      //removeEventListener("click",fecharOnclick);
+      x.remove();
+    }
+  },4000);
+}
+
+
+// Variáveis conquistas
 
 let conqs=[
   // Não ocultas
@@ -148,6 +150,10 @@ let conqs=[
     {
       nom:"Nova Era da Informática",
       dsc:"Compre um programador de Portugol."
+    },
+    {
+      nom:"Compensa a longo prazo...",
+      dsc:"Faça uma compra que não dará lucro pelos próximos 10 minutos ou 1200 clicks."
     }
   ],
 
@@ -159,41 +165,12 @@ let conqs=[
     },
     {
       nom:"Não foi Macro, né?",
-      dsc:"Clique 3 vezes em 10 segundos."
+      dsc:"Clique 40 vezes em 5 segundos."
     }
   ]
 ];
 
-for(let i=0; i<conqs[0].length; i++){
-  conqs[0][i].tem=false;
-}
-for(let i=0; i<conqs[1].length; i++){
-  conqs[1][i].tem=false;
-}
-
-
-// Lista conquistas
-
-let conqsUl=document.querySelector("#listaConqs");
-let conqsLi=document.querySelector("#conqs"),conqsPop=document.querySelector("#conqsPop");
-
-conqsLi.addEventListener("click",function () {
-  abre(conqsPop);
-});
-
-for(let i=0; i<2; i++){
-  for(let j=0; j<conqs[i].length; j++){
-    let x=conqs[i][j].el=document.createElement("li");
-
-    x.innerHTML="<section><h3>"+conqs[i][j].nom+"</h3><p>"+conqs[i][j].dsc+"</p></section>";
-    if(i==1){
-      x.innerHTML+="<!--Seu raquerzinho enxerido (para raquear mais ainda aperte F12, vá no console e escreva \"dinheiro=100000000000000000000000000000000\")--><section class='inicial'><h3>Conquista oculta</h3><p>Não vou te falar o que tem que fazer para desbloquear essa conquista! Nem adianta inspecionar pra saber!</p></section>";
-      x.classList.add("nVouTeFalar");
-    }
-
-    conqsUl.appendChild(x);
-  }
-}
+let conqsObtidas=0;
 
 
 // Popups genéricos
@@ -208,13 +185,16 @@ function fecha(el){
   setaTempo();
 }
 
-let pops=document.querySelectorAll(".fundoPop"),btnsFechar=document.querySelectorAll(".jsfechar"); /* Faz com que botões de fechar
+let pops=document.querySelectorAll(".fundoPop"); /* Faz com que botões de fechar
 fechem seus popups. Para incluir essa função em um botão, basta colocar a classe "jsfechar" nele. O botão deve estar dentro de um
 <div> de classe "fundoPop" (o div com o fundo perto semitransparente). */
 for(let i=0; i<pops.length; i++){
-  btnsFechar[i].addEventListener("click",function () {
-    fecha(pops[i]);
-  });
+  let btnsFechar=pops[i].querySelectorAll(".jsfechar"); // Isso funciona !!!!!!1
+  for(let j=0; j<btnsFechar.length; j++){
+    btnsFechar[j].addEventListener("click",function () {
+      fecha(pops[i]);
+    });
+  }
 }
 
 
@@ -287,17 +267,20 @@ Number.prototype.formata=function(cd=-1){ /* Sendo x um real e y um inteiro, x.f
   return ret;
 }
 
-function mudaDin(){ /* Atualiza o <span> com o dinheiro do jogador. Chamada sempre que o dinheiro muda. */
+function mudaDin(x){ /* Atualiza o <span> com o dinheiro do jogador. Chamada sempre que o dinheiro muda. */
+  // 4/10/2018 nova funcionalidade: também testa se o cara é um hacker
+  if(dinheiro>dinAnterior) achievementUnlock(conqs[1][0]);
+  dinheiro+=x;
   dinheiroSpan.html(dinheiro.formata(2));
+  dinAnterior=dinheiro;
 }
 
 function comprar(obj){ /* Verifica se custo do elemento obj é menor ou igual ao dinheiro e, se sim, retorna true e o preço é pago. */
-  let float=obj.dataset.custo;
+  let float= +obj.dataset.custo;
   let ret=dinheiro >= float;
   if(ret){
-    dinheiro -= float;
     dinGasto+=float;
-    mudaDin();
+    mudaDin(-float);
   }
   return ret;
 }
@@ -315,23 +298,36 @@ ajustes no preço, valorDoSeg ou valorDoClique, número de objetos comprados... 
 
 function Add(obj){
   let aumentoDoLucro=parseFloat(obj.dataset.add)*qtdCompra;
-  if(obj.parentNode.dataset.autoclick===undefined) valorDoClique += aumentoDoLucro;
-  else valorDoSeg+=aumentoDoLucro;
+  let necessario=600;
+
+  if(obj.parentNode.dataset.autoclick===undefined){
+    valorDoClique += aumentoDoLucro;
+    necessario*=2;
+  }
+  else{
+    valorDoSeg+=aumentoDoLucro;
+  }
+
+  if(necessario*aumentoDoLucro< +obj.dataset.custo){
+    achievementUnlock(conqs[0][1]);
+  }
+
   obj.contribLucro+=aumentoDoLucro;
   obj.comprados+=Number(qtdCompra);
 }
 
+let achClicks=0;
 function Pc(){
-  dinheiro += valorDoClique;
-  mudaDin();
+  mudaDin(valorDoClique);
+  clicksDados++;
 
   // Conquista
   if(conqs[1][1].tem==false){
     achClicks++;
     setTimeout(function () {
       achClicks--;
-    },10000);
-    if(achClicks>=3){
+    },5000);
+    if(achClicks>=40){
       achievementUnlock(conqs[1][1]);
     }
   }
@@ -353,7 +349,7 @@ function refreshAll(){ /* Manda um Refresh em todos os elementos do vetor upgrad
   for(let i=0; i<upgrades.length; i++){
     refresh(upgrades[i]);
   }
-  mudaDin();
+  mudaDin(0);
 }
 
 upgrades.click(Pagar);
@@ -484,6 +480,7 @@ function save(){ /* Salva todas as variáveis importantes no Local Storage */
   localStorage.setItem("valorDoSeg",valorDoSeg);
 
   localStorage.setItem("dinGasto",dinGasto);
+  localStorage.setItem("clicksDados",clicksDados);
   localStorage.setItem("tempo",tempo);
 
   let vdo=[];
@@ -505,6 +502,17 @@ function save(){ /* Salva todas as variáveis importantes no Local Storage */
     }
   }
   localStorage.setItem("ups",JSON.stringify(upsComprados));
+
+
+  // Salvar conquistas
+
+  let conseguidas=[[],[]];
+  for(let i=0; i<2; i++){
+    for(let j=0; j<conqs[i].length; j++){
+      conseguidas[i][j]=conqs[i][j].tem;
+    }
+  }
+  localStorage.setItem("conseguidas",JSON.stringify(conseguidas));
 }
 
 saveBtn.addEventListener("click",save);
@@ -512,21 +520,25 @@ saveBtn.addEventListener("click",save);
 
 // Reset
 
-let resetBtn=document.querySelector("#reset");
+let resetBtn=document.querySelector("#reset"),resetPop=document.querySelector("#resetPop");
 resetBtn.addEventListener("click",function () {
+  abre(resetPop);
+});
+
+let resetaDeVerdade=document.querySelector("#resetaDeVerdade");
+resetaDeVerdade.addEventListener("click",function () {
   ele.value=1;
   updateAll();
   zera();
   refreshAll();
 });
 
-
 // Load
 
 function zera(){
   for(let i=0; i<upgrades.length; i++){
     upgrades[i].comprados=0;
-    upgrades[i].custoSemArr=Number(upgrades[i].dataset.custo); // custoSemArr = custo sem arredondamento
+    upgrades[i].custoSemArr=upgrades[i].custoInicial; // custoSemArr = custo sem arredondamento
     upgrades[i].inflacao=upgrades[i].custoSemArr/10; // O tanto que o preço aumenta a cada compra
     upgrades[i].contribLucro=0; /* Para guardar a participação de cada tipo de produto no lucro */
   }
@@ -537,6 +549,18 @@ function zera(){
 
   dinGasto=0;
   tempo=0;
+  clicksDados=0;
+  let temEl=Boolean(conqs[0][0].el);
+
+  for(let i=0; i<2; i++){
+    for(let j=0; j<conqs[i].length; j++){
+      conqs[i][j].tem=false;
+      if(temEl) conqs[i][j].el.classList.remove("desbloqueada");
+    }
+  }
+
+  conqsObtidas=0;
+  if(temEl)conqSpans[0].innerHTML="0";
 }
 
 function load(){
@@ -548,6 +572,7 @@ function load(){
 
     dinGasto=Number(localStorage.getItem("dinGasto"));
     tempo=Number(localStorage.getItem("tempo"));
+    clicksDados=+localStorage.getItem("clicksDados"); // Mais converte para número, igual a Number(x);
 
     let vdo=JSON.parse(localStorage.getItem("vdo"));
     for(let i=0; i<upgrades.length; i++){
@@ -569,6 +594,16 @@ function load(){
         unlock(txtPop[i].dataset.mostra);
       }
     }
+
+    // Aplica conquistas
+    let conseguidas=JSON.parse(localStorage.getItem("conseguidas"));
+    for(let i=0; i<2; i++){
+      for(let j=0; j<conqs[i].length; j++){
+        if(conqs[i][j].tem=conseguidas[i][j]){
+          conqsObtidas++;
+        }
+      }
+    }
   }
   else {
     zera();
@@ -576,6 +611,37 @@ function load(){
 }
 load();
 refreshAll();
+
+
+// Conquistas
+
+let conqSpans=document.querySelectorAll("#numConqs span");
+conqSpans[0].innerHTML=conqsObtidas;
+conqSpans[1].innerHTML=conqs[0].length+conqs[1].length;
+
+let conqsUl=document.querySelector("#listaConqs");
+let conqsLi=document.querySelector("#conqs"),conqsPop=document.querySelector("#conqsPop");
+
+conqsLi.addEventListener("click",function () {
+  abre(conqsPop);
+});
+
+for(let i=0; i<2; i++){
+  for(let j=0; j<conqs[i].length; j++){
+    let x=conqs[i][j].el=document.createElement("li");
+
+    x.innerHTML="<section><h3>"+conqs[i][j].nom+"</h3><p>"+conqs[i][j].dsc+"</p></section>";
+    if(conqs[i][j].tem){
+      x.classList.add("desbloqueada");
+    }
+    if(i==1){
+      x.innerHTML+="<!--Seu raquerzinho enxerido (para raquear mais ainda aperte F12, vá no console e escreva \"dinheiro=100000000000000000000000000000000\")--><section class='inicial'><h3>Conquista oculta</h3><p>Não vou te falar o que tem que fazer para desbloquear essa conquista! Nem adianta inspecionar pra saber!</p></section>";
+      x.classList.add("nVouTeFalar");
+    }
+
+    conqsUl.appendChild(x);
+  }
+}
 
 
 // Setinha!!!
@@ -589,6 +655,7 @@ function remover(){
   if(this.comprados>=1||dinheiro>=this.dataset.custo){
     liEspecifica.classList.remove("special");
     liEspecifica.removeEventListener("click",remover);
+    achievementUnlock(conqs[0][0]);
   }
 }
 liEspecifica.addEventListener("click",remover);
@@ -654,14 +721,157 @@ sobre.click(function () {
 
 let clickme=$("#clickme");
 clickme.click(function(){
-  dinheiro+=1;
   setTimeout(function () {
     alert("Não dá para saber se você realmente baixou, mas como tem 1% de chance de você ter baixado vamos te dar 1% do dinheiro. Aproveite seu conto!");
   },10);
-  mudaDin();
+  mudaDin(1);
   fimPromo();
   clickme.off("click");
 });
+
+
+// Estatísticas
+
+let statTable=document.querySelector("#statTable"); // Gera tabela
+let tdsContrib=[],tdsTempo=[];
+
+for(let i=0; i<upgrades.length; i++){
+  let criadas=0;
+
+  let tr=document.createElement("tr");
+  statTable.appendChild(tr);
+
+  let th=document.createElement("th");
+  tr.appendChild(th);
+  th.valor=i;
+  th.innerHTML=upgrades[i].firstChild.textContent;
+  th.dataset.ind=0;
+
+  let temAutoclick=upgrades[i].parentNode.dataset.autoclick==="";
+
+  function createTd(vtrue,vfalse,vetor){
+    let td=document.createElement("td");
+    tr.appendChild(td);
+    td.innerHTML=vtrue;
+    vetor[i]=td;
+
+    let span=document.createElement("span");
+    td.insertBefore(span,td.firstChild);
+    vetor[i].conv=span;
+
+    if(!temAutoclick){
+      function innerHTMLQNBuga(el,html){
+        el.appendChild(document.createTextNode(html));
+      }
+
+      innerHTMLQNBuga(td," (");
+      let span2=document.createElement("span");
+      td.appendChild(span2);
+      vetor[i].semConv=span2;
+      innerHTMLQNBuga(td,vfalse+")");
+    }
+
+    td.dataset.ind=++criadas;
+  }
+
+  createTd("/s","/clique",tdsContrib);
+  createTd("s"," cliques",tdsTempo);
+}
+
+let statPop=document.querySelector("#statPop"),statLi=document.querySelector("#stats");
+let tdTempo=document.querySelector("#tempoJogo"),tdDin=document.querySelector("#dinGasto"),
+tdClicks=document.querySelector("#clicksDados"),tdClicksPS=document.querySelector("#clicksPS");
+
+function converteSegundos(so){
+  let h = Math.floor(so/3600);
+  let m = Math.floor((so%3600)/60);
+  let s = so%60;
+  function poeZero(x){
+    if(x<10) return "0"+x;
+    return String(x);
+  }
+  return (h? poeZero(h)+":": "")+poeZero(m)+":"+poeZero(s);
+}
+
+
+// Organizadores
+
+let sorters=document.querySelectorAll(".sorter");
+for(let i=0; i<sorters.length; i++){
+  sorters[i].addEventListener("click",function () {
+    for(let j=0; j<sorters.length; j++){
+      const sd=sorters[j].dataset;
+      if(j!=i){
+        sd.orient="0";
+      }
+      else{
+        let vetorEl=statTable.querySelectorAll('[data-ind="'+i+'"]');
+
+        if(sd.orient=="0"){
+          sd.orient=sd.padrao;
+        }
+        else{
+          sd.orient*=-1;
+        }
+
+        let copia=[];
+        for(let k=0; k<vetorEl.length; k++){
+          copia[k]={
+            ind:k,
+            valor:vetorEl[k].valor
+          };
+        }
+
+        let k, l;
+        for(k = 1; k < copia.length; k++) {
+          let el = copia[k];
+          l = k - 1;
+          while (l >= 0 && (sd.orient=="1"? (copia[l].valor > el.valor): (copia[l].valor < el.valor))) {
+            copia[l+1] = copia[l];
+            l--;
+          }
+          copia[l+1] = el;
+        }
+
+        for(let k=0; k<copia.length; k++){
+          statTable.appendChild(vetorEl[copia[k].ind].parentNode);
+        }
+      }
+    }
+  });
+}
+
+
+statLi.addEventListener("click",function () {
+  abre(statPop);
+  clicksPS=clicksDados/tempo;
+
+  for(let i=0; i<upgrades.length; i++){
+    function set(el,expr,eDireta){
+      if(clicksDados!=0 || !(el.semConv)){
+        let exprEmS=el.semConv?
+        (eDireta? expr*clicksPS: expr/clicksPS):
+        expr;
+        el.valor=exprEmS;
+        el.conv.innerHTML=exprEmS.formata(2);
+      }
+      else{
+        el.valor=0;
+        el.conv.innerHTML="0.00";
+      }
+      if(el.semConv) el.semConv.innerHTML=expr.formata(2);
+    }
+
+    set(tdsContrib[i],upgrades[i].contribLucro,true);
+    set(tdsTempo[i],(Math.round(upgrades[i].custoSemArr*100)/100)/upgrades[i].dataset.add,false);
+  }
+
+  tdTempo.innerHTML=converteSegundos(tempo);
+  tdDin.innerHTML=dinGasto.formata(2)+" contos";
+  tdClicks.innerHTML=clicksDados;
+  tdClicksPS.innerHTML=clicksPS.formata(2);
+});
+
 
 // parte das Aleatoriedades *********************************************
 
@@ -676,16 +886,14 @@ for(let i = 0; i < aleatorios.length; i++){ // copiei la de cima fitz
 }
 
 
-  //mudaDin()
 for(let i = 0; i < aleatorios.length; i++){
   aleatorios[i].addEventListener("click", function(){
-  console.log("clickou em aleatorios["+i+"]")
-  if(comprar(aleatorios[i])){
-    funcoesAleatorias[i]()
-    aleatorios[i].classList.add("oculto"); /* A função "fecha" é só para os popups porque ela para o tempo e tem outros efeitos
-    colaterais */
-  }
-  })
+    if(comprar(aleatorios[i])){
+      funcoesAleatorias[i]()
+      aleatorios[i].classList.add("oculto"); /* A função "fecha" é só para os popups porque ela para o tempo e tem outros efeitos
+      colaterais */
+    }
+  });
 }
 
 let girando = 1;
@@ -696,7 +904,6 @@ let girarFunc,numsDoidoes;
 
 const funcoesAleatorias = [ // array com funcoes para as aleatoriedades, me inspirei na de la de cima tambem
   function(){
-    console.log("spinner funcionando");
     tormentaButton.classList.remove('oculto')
     spinnerImg.classList.remove('oculto');
     spinnerImg.addEventListener("click",giraSpinner);
@@ -733,13 +940,13 @@ function giraSpinner(){
   }
 }
 
+
 //Tormenta do spinner
 
 tormentaButton.addEventListener("click", ativaTormenta)
 
 function ativaTormenta(e){
   if(!tormentaOff){
-    alert('tormentos')
     tormentaOff = 1;
     tormentaButton.innerHTML = "A <em>Tormenta do Spinner</em> está ativa!"
     fogoImg.classList.remove("oculto")
@@ -771,8 +978,7 @@ function ativaTormenta(e){
 function spanTormenta(e){
   let valorTormenta = Math.round(valorDoClique*100)/2000;
   if(valorTormenta < 0.05) valorTormenta = 0.05;
-  dinheiro+=valorTormenta;
-  mudaDin();
+  mudaDin(valorTormenta);
   let x=criaNumerinho("#ff0000",divPc[0],valorTormenta);
   posicionaNumerinho(x,(botaoPc[0].offsetWidth-x.offsetWidth)*Math.sqrt(Math.random()*Math.random()),(botaoPc[0].offsetHeight-x.offsetHeight)*Math.sqrt(Math.random()*Math.random()));
 }

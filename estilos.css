@@ -438,6 +438,10 @@ div.descLi{
   background-color: #efefef;
   box-shadow: 4px 4px 4px 0 rgba(0,0,0,0.5);
   padding:16px 24px;
+  max-width:750px;
+  max-height:88%;
+  overflow-y: auto;
+  position: relative;
 }
 #unlockPopup>.caxaPop{
   width:300px;
@@ -458,7 +462,6 @@ div.descLi{
   transition: all 100ms linear;
   display: block;
   position: sticky;
-  top:4px;
   margin-bottom:-20px;
   margin-left: auto;
   margin-right: -8px;
@@ -474,35 +477,51 @@ div.descLi{
 
 /* Tabelas */
 
-#sobrePop>.caxaPop{
-  width:750px;
-  max-height:88%;
-  overflow-y: auto;
-  position: relative;
-}
-
 table{
   border-collapse: collapse;
 }
 
-.sans table{
-  margin-bottom: 1.5em;
-}
-.sans tr>*{
+.textTable>tbody>tr>*{
   padding-bottom: 0.66667em;
   padding-top: 0.66667em;
   border-bottom: 1px solid #bfbfbf;
   border-top: 1px solid #bfbfbf;
 }
-.sans tr>:first-child{
+.textTable>tbody>tr>:first-child{
   padding-left: 0.66667em;
 }
-.sans tr>:last-child{
+.textTable>tbody>tr>:last-child{
   padding-right: 0.66667em;
 }
-.sans th{
+.textTable>tbody>tr>th{
   white-space: nowrap;
   padding-right: 2em;
+}
+
+/* Gambiarra para ter acesso à propriedade "order" */
+
+.dataTable{
+  font-size: 0.9em;
+  margin-bottom: 0.741em;
+}
+.dataTable>tbody>tr>*,.dataTable>thead>tr>*{
+  border:1px solid #3f3f3f;
+  padding: 2px 4px;
+  text-align: center;
+}
+.dataTable>tbody>tr:nth-child(2n+1){
+  background-color: #f7f7f7;
+}
+.dataTable>tbody>tr:nth-child(2n){
+  background-color:#e7e7e7;
+}
+.dataTable>thead{
+  color:#7f0000;
+  background-color: #efe7df;
+}
+.dataTable>thead th>div{
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Barrinha de comprar vários */
@@ -529,6 +548,24 @@ table{
 
 /* Pontinhos que ficam subindo */
 
+@keyframes ponto {
+  0%{
+    transform: translateY(0);
+  }
+  100%{
+    transform: translateY(-120px);
+  }
+}
+
+@keyframes fade {
+  0%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+
 .numPt{
   position: absolute;
   font-size: 24px;
@@ -537,8 +574,8 @@ table{
   font-family: sans-serif;
   user-select: none;
   pointer-events: none;
-  transition: opacity 1s cubic-bezier(.5,.25,.75,.5), top 2s cubic-bezier(.25,.5,.5,.75);
   opacity: 1;
+  animation: fade 1s cubic-bezier(.5,.25,.75,.5), ponto 2s cubic-bezier(.25,.5,.5,.75);
 }
 
 
@@ -551,18 +588,11 @@ table{
   margin-bottom: 0;
 }
 
-.right{
-  text-align:right;
-}
-.center{
-  text-align:center;
-}
-
 .btn1{
-  display: block;
+  display: flex;
+  justify-content: space-between;
 }
 .btn1>*{
-  display: inline-block;
   font-size: 0.833em;
   padding:8px 12px;
   color:white;
@@ -587,6 +617,13 @@ table{
   right:0;
   background-color: rgba(0,0,0,0.1);
   z-index:1;
+}
+
+.right{
+  justify-content: flex-end;
+}
+.center{
+  justify-content: center;
 }
 
 
@@ -647,8 +684,10 @@ table{
   animation: moveIn 250ms linear forwards;
   max-width: 320px;
 }
-.ach>.caxaPop{
+.ach>*{
   padding:12px 16px;
+  background-color: #efefef;
+  box-shadow: 4px 4px 4px 0 rgba(0,0,0,0.5);
 }
 .ach::before{
   position: absolute;
@@ -668,17 +707,8 @@ table{
 }
 
 
-@keyframes fade {
-  0%{
-    opacity: 1;
-  }
-  100%{
-    opacity: 0;
-  }
-}
-
 .ach.pendingFade{
-  animation: moveIn 250ms linear forwards,fade 2s linear 1s forwards;
+  animation: moveIn 250ms linear forwards,fade 1s linear 3s forwards;
 }
 .ach:not(.pendingFade){
   transition: opacity 100ms linear;
@@ -714,13 +744,13 @@ table{
 #listaConqs>.nVouTeFalar>section{
   background-color: rgba(127,127,127,0.2);
 }
-.nVouTeFalar:not(.desbloqueada)>:not(.inicial){
+#listaConqs>.nVouTeFalar:not(.desbloqueada)>:not(.inicial){
   display: none;
 }
-.nVouTeFalar.desbloqueada>.inicial{
+#listaConqs>.nVouTeFalar.desbloqueada>.inicial{
   display: none;
 }
-.nVouTeFalar:not(.desbloqueada) p{
+#listaConqs>.nVouTeFalar:not(.desbloqueada) p{
   color:#7f7f7f;
   font-style: italic;
 }
@@ -750,10 +780,60 @@ table{
   color:#007f00;
   display: block;
 }
-
 #listaConqs>:not(.desbloqueada):not(.nVouTeFalar)>section::after{
   content: "Ainda não desbloqueada.";
   margin-top:0.5em;
   color:#00007f;
   display: block;
+}
+
+#listaConqs>.nVouTeFalar{
+  order:2;
+}
+#listaConqs>.desbloqueada{
+  order:1;
+}
+
+
+/* Estatísticas */
+
+.esmaecido{
+  font-size: 0.9em;
+  color:#7f7f7f;
+  font-style: italic;
+  margin-top:-0.37em;
+}
+
+.sorter{
+  background: none;
+  border: none;
+  padding: 0;
+  color:inherit;
+  width: 13px;
+  height: 16px;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  margin-left:4px;
+}
+[data-orient="-1"]::after,[data-orient="0"]::after{
+  content:"▼";
+}
+[data-orient="1"]::before,[data-orient="0"]::before{
+  content: "▲";
+}
+[data-orient="0"]{
+  position: relative;
+}
+[data-orient="0"]::before,[data-orient="0"]::after{
+  position: absolute;
+  display: block;
+  transform: scaleY(0.5);
+  line-height: 9px;
+}
+[data-orient="0"]::before{
+  top:0;
+}
+[data-orient="0"]::after{
+  bottom:0;
 }
