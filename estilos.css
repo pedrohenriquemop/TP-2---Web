@@ -449,7 +449,7 @@ div.descLi{
 
 .fechar{
   height:20px;
-  min-width: 20px;
+  width: 20px;
   font-size: 26px;
   line-height: 20px;
   text-align: center;
@@ -462,6 +462,7 @@ div.descLi{
   transition: all 100ms linear;
   display: block;
   position: sticky;
+  top:0;
   margin-bottom:-20px;
   margin-left: auto;
   margin-right: -8px;
@@ -481,6 +482,9 @@ table{
   border-collapse: collapse;
 }
 
+.textTable{
+  margin-bottom: 1.5em;
+}
 .textTable>tbody>tr>*{
   padding-bottom: 0.66667em;
   padding-top: 0.66667em;
@@ -496,6 +500,9 @@ table{
 .textTable>tbody>tr>th{
   white-space: nowrap;
   padding-right: 2em;
+}
+.textTable>tbody>tr>td{
+  width: 100%;
 }
 
 /* Gambiarra para ter acesso à propriedade "order" */

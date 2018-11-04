@@ -23,6 +23,7 @@ let nAtivouCronometro=true;
 
 for(let i=0; i<upgrades.length; i++){
   upgrades[i].custoInicial=+upgrades[i].dataset.custo;
+  upgrades[i].lucroInicial=+upgrades[i].dataset.add;
 }
 
 
@@ -53,12 +54,12 @@ function setaTempo(){ /* Retoma contagem de tempo e lucro por segundo. */
   pararJogo=setInterval(function () {
     tempo++;
 
-    if(valorDoSeg){
+    if(tempo%100==0 && valorDoSeg){
       mudaDin(valorDoSeg);
       let x=criaNumerinho("#00dfdf",divPc[0],valorDoSeg);
       posicionaNumerinho(x,(botaoPc[0].offsetWidth-x.offsetWidth)/2,(botaoPc[0].offsetHeight-x.offsetHeight)/2);
     }
-  },1000);
+  },10);
 }
 
 function pausa(){
@@ -175,13 +176,21 @@ let conqsObtidas=0;
 
 // Popups genéricos
 
+function fecharAoClicarFora(e) {
+  if(e.target==this){
+    fecha(this);
+  }
+}
+
 function abre(el){ /* Abre um popup. O parâmetro "el" deve ser o elemento HTML desse popup (um <div> com a classe "fundoPop"). */
   el.classList.remove("pseudoOculto");
+  el.addEventListener("click",fecharAoClicarFora);
   pausa();
 }
 
 function fecha(el){
   el.classList.add("pseudoOculto");
+  el.removeEventListener("click",fecharAoClicarFora);
   setaTempo();
 }
 
@@ -204,10 +213,8 @@ let divPop=document.querySelector("#unlockPopup");
 let txtPop=document.querySelectorAll("#unlockPopup section");
 
 function unlock(li){
-  if(li){
-    for(let i=0; i<lisMenu.length; i++){
-      if(lisMenu[i].dataset.mostra==li) lisMenu[i].classList.remove("oculto");
-    }
+  for(let i=0; i<lisMenu.length; i++){
+    if(lisMenu[i].dataset.mostra==li) lisMenu[i].classList.remove("oculto");
   }
 }
 function abrePopop(ind){
@@ -362,10 +369,10 @@ botaoPc.click(function(e){
 
 comPopop.click(function(e){ /* Se a quantidade do produto for maior que seu atributo "qtdpopup", abre seu popup e desbloqueia uma
 nova aba */
-  let short=e.currentTarget.dataset;
-  if(short.qtdpopup!="jafoi"&&e.currentTarget.comprados>=Number(short.qtdpopup)){
-    abrePopop(Number(short.indicepopup));
-    short.qtdpopup="jafoi";
+  const data=this.dataset;
+  if(this.disponivel && this.comprados>=Number(data.qtdpopup)){
+    abrePopop(Number(data.indicepopup));
+    this.disponivel=false;
   }
 });
 
@@ -539,8 +546,46 @@ function zera(){
   for(let i=0; i<upgrades.length; i++){
     upgrades[i].comprados=0;
     upgrades[i].custoSemArr=upgrades[i].custoInicial; // custoSemArr = custo sem arredondamento
+    upgrades[i].dataset.add=upgrades[i].lucroInicial;
     upgrades[i].inflacao=upgrades[i].custoSemArr/10; // O tanto que o preço aumenta a cada compra
     upgrades[i].contribLucro=0; /* Para guardar a participação de cada tipo de produto no lucro */
+  }
+
+  let mostraLis=[];
+
+  for(let i=0; i<comPopop.length; i++){
+    if(comPopop[i].disponivel==false){
+      comPopop[i].disponivel=true;
+      mostraLis.push(txtPop[+comPopop[i].dataset.indicepopup].dataset.mostra);
+    }
+  }
+
+  // Nossa, eu era muito ruim em programação para fazer um código desses.
+  // Olha o que eu precisei fazer para resetar os upgrades!
+
+  for(let i=0; i<lisMenu.length; i++){
+    for(let j=0; j<mostraLis.length; j++){
+      const mostra=lisMenu[i].dataset.mostra;
+
+      if(mostra==mostraLis[j]){
+        mostraLis.splice(j,1);
+        const classes=lisMenu[i].classList;
+        classes.add("oculto");
+
+        if(classes.contains("atual")){
+          classes.remove("atual");
+          for(let k=0; k<divsCentral.length; k++){
+            if(divsCentral[k].id==mostra){
+              divsCentral[k].classList.remove("visivel");
+            }
+            else if(divsCentral[k].id=="pecas"){
+              divsCentral[k].classList.add("visivel");
+            }
+          }
+          lisMenu[2].classList.add("atual");
+        }
+      }
+    }
   }
 
   valorDoClique = 0.01;
@@ -550,7 +595,7 @@ function zera(){
   dinGasto=0;
   tempo=0;
   clicksDados=0;
-  let temEl=Boolean(conqs[0][0].el);
+  let temEl=conqs[0][0].el!=undefined;
 
   for(let i=0; i<2; i++){
     for(let j=0; j<conqs[i].length; j++){
@@ -559,8 +604,12 @@ function zera(){
     }
   }
 
+  for(let i=0; i<ups.length; i++){
+    ups[i].classList.remove("oculto");
+  }
+
   conqsObtidas=0;
-  if(temEl)conqSpans[0].innerHTML="0";
+  if(temEl) conqSpans[0].innerHTML="0";
 }
 
 function load(){
@@ -590,8 +639,11 @@ function load(){
 
     for(let i=0; i<comPopop.length; i++){
       if(comPopop[i].comprados>=Number(comPopop[i].dataset.qtdpopup)){
-        comPopop[i].dataset.qtdpopup="jafoi";
+        comPopop[i].disponivel=false;
         unlock(txtPop[i].dataset.mostra);
+      }
+      else{
+        comPopop[i].disponivel=true;
       }
     }
 
@@ -796,6 +848,33 @@ function converteSegundos(so){
 
 // Organizadores
 
+function sortTable(i){
+  let vetorEl=statTable.querySelectorAll('[data-ind="'+i+'"]');
+  let copia=[];
+  const orient=sorters[i].dataset.orient;
+
+  for(let k=0; k<vetorEl.length; k++){
+    copia[k]={
+      ind:k,
+      valor:vetorEl[k].valor
+    };
+  }
+
+  for(let k = 1,l; k < copia.length; k++) {
+    let el = copia[k];
+    l = k - 1;
+    while (l >= 0 && (orient=="1"? (copia[l].valor > el.valor): (copia[l].valor < el.valor))) {
+      copia[l+1] = copia[l];
+      l--;
+    }
+    copia[l+1] = el;
+  }
+
+  for(let k=0; k<copia.length; k++){
+    statTable.appendChild(vetorEl[copia[k].ind].parentNode);
+  }
+}
+
 let sorters=document.querySelectorAll(".sorter");
 for(let i=0; i<sorters.length; i++){
   sorters[i].addEventListener("click",function () {
@@ -805,8 +884,6 @@ for(let i=0; i<sorters.length; i++){
         sd.orient="0";
       }
       else{
-        let vetorEl=statTable.querySelectorAll('[data-ind="'+i+'"]');
-
         if(sd.orient=="0"){
           sd.orient=sd.padrao;
         }
@@ -814,28 +891,7 @@ for(let i=0; i<sorters.length; i++){
           sd.orient*=-1;
         }
 
-        let copia=[];
-        for(let k=0; k<vetorEl.length; k++){
-          copia[k]={
-            ind:k,
-            valor:vetorEl[k].valor
-          };
-        }
-
-        let k, l;
-        for(k = 1; k < copia.length; k++) {
-          let el = copia[k];
-          l = k - 1;
-          while (l >= 0 && (sd.orient=="1"? (copia[l].valor > el.valor): (copia[l].valor < el.valor))) {
-            copia[l+1] = copia[l];
-            l--;
-          }
-          copia[l+1] = el;
-        }
-
-        for(let k=0; k<copia.length; k++){
-          statTable.appendChild(vetorEl[copia[k].ind].parentNode);
-        }
+        sortTable(i);
       }
     }
   });
@@ -844,7 +900,7 @@ for(let i=0; i<sorters.length; i++){
 
 statLi.addEventListener("click",function () {
   abre(statPop);
-  clicksPS=clicksDados/tempo;
+  clicksPS=clicksDados/(tempo/100);
 
   for(let i=0; i<upgrades.length; i++){
     function set(el,expr,eDireta){
@@ -866,10 +922,17 @@ statLi.addEventListener("click",function () {
     set(tdsTempo[i],(Math.round(upgrades[i].custoSemArr*100)/100)/upgrades[i].dataset.add,false);
   }
 
-  tdTempo.innerHTML=converteSegundos(tempo);
+  tdTempo.innerHTML=converteSegundos(Math.round(tempo/100));
   tdDin.innerHTML=dinGasto.formata(2)+" contos";
   tdClicks.innerHTML=clicksDados;
   tdClicksPS.innerHTML=clicksPS.formata(2);
+
+  for(let i=0; i<sorters.length; i++){
+    if(sorters[i].dataset.orient!="0"){
+      sortTable(i);
+      break;
+    }
+  }
 });
 
 
