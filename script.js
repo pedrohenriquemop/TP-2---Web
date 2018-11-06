@@ -155,7 +155,7 @@ let conqs=[
     {
       nom:"Compensa a longo prazo...",
       dsc:"Faça uma compra que não dará lucro pelos próximos 10 minutos ou 1200 clicks."
-    }
+    },
   ],
 
   // Ocultas
@@ -167,7 +167,11 @@ let conqs=[
     {
       nom:"Não foi Macro, né?",
       dsc:"Clique 40 vezes em 5 segundos."
-    }
+    },
+    {
+      nom:"Desativa vagabundo '-'",
+      dsc:"Clique 100 vezes em 10 segundos"
+    },
   ]
 ];
 
@@ -323,7 +327,7 @@ function Add(obj){
   obj.comprados+=Number(qtdCompra);
 }
 
-let achClicks=0;
+let achClicks=0,achClicks2=0;
 function Pc(){
   mudaDin(valorDoClique);
   clicksDados++;
@@ -338,7 +342,18 @@ function Pc(){
       achievementUnlock(conqs[1][1]);
     }
   }
+
+  if(conqs[1][2].tem==false){
+    achClicks2++;
+    setTimeout(function () {
+      achClicks2--;
+    },10000);
+    if(achClicks2>=100){
+      achievementUnlock(conqs[1][2]);
+    }
+  }
 }
+
 
 function refreshCusto(obj){ /* Atualiza na tela o custo de "obj". */
   let x=(obj.custoSemArr+obj.inflacao*(qtdCompra-1)/2)*qtdCompra;
@@ -637,16 +652,6 @@ function load(){
       aplicarUp(iuc[i]);
     }
 
-    for(let i=0; i<comPopop.length; i++){
-      if(comPopop[i].comprados>=Number(comPopop[i].dataset.qtdpopup)){
-        comPopop[i].disponivel=false;
-        unlock(txtPop[i].dataset.mostra);
-      }
-      else{
-        comPopop[i].disponivel=true;
-      }
-    }
-
     // Aplica conquistas
     let conseguidas=JSON.parse(localStorage.getItem("conseguidas"));
     for(let i=0; i<2; i++){
@@ -663,6 +668,14 @@ function load(){
 }
 load();
 refreshAll();
+
+for(let i=0; i<comPopop.length; i++){
+  if(comPopop[i].comprados>=Number(comPopop[i].dataset.qtdpopup)){
+    comPopop[i].disponivel=false;
+    unlock(txtPop[i].dataset.mostra);
+  }
+  else comPopop[i].disponivel=true;
+}
 
 
 // Conquistas
@@ -991,6 +1004,8 @@ function giraSpinner(){
     girarFunc =setInterval(function(){
       spinnerImg.style.transform="rotateZ("+rodamento+"deg)";
       rodamento+=19;
+      let valorTormenta = Math.round(valorDoClique*100)/2000;
+      if(valorTormenta < 0.05) valorTormenta = 0.05;
     }, 33);
     if(tormenta){
       numsDoidoes=setInterval(spanTormenta,33);
@@ -1037,6 +1052,7 @@ function ativaTormenta(e){
     alert('ta carregando po calma ai')
   }
 }
+
 
 function spanTormenta(e){
   let valorTormenta = Math.round(valorDoClique*100)/2000;
