@@ -2,6 +2,9 @@ body{
   background-color: #3f5f7f;
   position: relative;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  height:100vh;
 }
 *{
   margin: 0;
@@ -66,14 +69,8 @@ header{
 
 main{
   display: flex;
-}
-.div{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding:40px;
-  box-sizing: border-box;
+  flex:0 1 100%;
+  margin-bottom: 5px;
 }
 main>:not(:last-child){
   border-right: 5px solid #3f5f7f;
@@ -87,6 +84,12 @@ main>*{
   background-repeat: no-repeat;
   background-size: cover;
   min-width:33.333%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:40px 30px;
+  box-sizing: border-box;
 }
 
 #clicker p{
@@ -102,6 +105,8 @@ main>*{
   color: white;
   text-shadow: 2px 2px 10px lightgray;
   min-width: 66.667%;
+  display: flex;
+  flex-direction: column;
 }
 
 #div-pc{
@@ -109,6 +114,7 @@ main>*{
 }
 #pc{
   width: 300px;
+  max-width: 100%;
   transition: transform 0.2s ease;
   margin:0 auto 30px;
   display:block;
@@ -155,10 +161,12 @@ main>*{
   list-style: none;
   font-size: 20px;
   font-family: 'Lucida Console', sans-serif;
-  padding-left:0;
-  margin-top: -20px;
+  padding: 10px 30px;
+  overflow-y:auto;
 }
-
+.std-list>:not(:first-child){
+  margin-top:20px;
+}
 .std-list>li{
   padding: 10px 20px;
   background-color: red;
@@ -166,7 +174,6 @@ main>*{
   text-shadow: 2px 2px 10px black;
   transition: transform 0.2s ease;
   user-select: none;
-  margin-top:20px;
 }
 
 .std-list>li:hover{
@@ -242,7 +249,7 @@ div.descLi{
   margin-top:10px;
 }
 .descLi dl{
-  margin-top:5px;
+  margin:5px -1.5em 0;
 }
 .descLi dl>div{
   display: inline-block;
@@ -266,6 +273,8 @@ div.descLi{
   padding: 0;
   display: flex;
   color:black;
+  flex: 0 0 auto;
+  padding-bottom: 30px;
 }
 #menu>li{
   background-color: #efefef;
@@ -288,6 +297,11 @@ div.descLi{
   background-color: #ffbfbf;
 }
 
+.abaDeProdutos{
+  padding: 0 30px;
+  display: flex;
+  justify-content: center;
+}
 .abaDeProdutos:not(.visivel){
   display: none !important;
 }
@@ -543,8 +557,8 @@ table{
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 40px;
-  margin-top:-10px;
+  padding:30px 0 40px;
+  flex: 0 0 auto;
 }
 #qtosComprar{
   display: block;

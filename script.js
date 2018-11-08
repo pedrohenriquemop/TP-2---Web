@@ -154,7 +154,47 @@ let conqs=[
     },
     {
       nom:"Compensa a longo prazo...",
-      dsc:"Faça uma compra que não dará lucro pelos próximos 10 minutos ou 1200 clicks."
+      dsc:"Faça uma compra que não dará lucro pelos próximos 10 minutos ou 1.200 clicks."
+    },
+    {
+      nom:"Config do Venaum",
+      dsc:"Compre 10.000 rãs, 2.000 GTX-1080 e 30 I7 dual-core."
+    },
+    {
+      nom:"Aqui tem coraje",
+      dsc:"Compre uma aleatoriedade."
+    },
+    {
+      nom:"Frota do hasão",
+      dsc:"Compre 1.000 programadores de JavaScript."
+    },
+    {
+      nom:"Efeito samuel",
+      dsc:"Tenha um total de 5.000 programadores antes de comprar o seu primeiro de JavaScript."
+    },
+    {
+      nom:"Dedicação é tudo!",
+      dsc:"Clique um total de 100.000 vezes."
+    },
+    {
+      nom:"You burro man?",
+      dsc:"Clique 100 vezes antes de comprar qualquer coisa."
+    },
+    {
+      nom:"Foco no que importa",
+      dsc:"Compre um programador de portugol antes de qualquer outro programador."
+    },
+    {
+      nom:"Subversão da lógica",
+      dsc:"Tenha mais programadores de Portugol do que cliques dados."
+    },
+    {
+      nom:"Maluco é brabo",
+      dsc:"Compre 1.000 itens com apenas 1 clique."
+    },
+    {
+      nom:"De volta as origens",
+      dsc:"Compre uma memória	rã já tendo 5.000 I7 dual-core."
     },
   ],
 
@@ -171,6 +211,10 @@ let conqs=[
     {
       nom:"Desativa vagabundo '-'",
       dsc:"Clique 100 vezes em 10 segundos"
+    },
+    {
+      nom:"Preguiçoso...",
+      dsc:"Fique 5 minutos sem clicar"
     },
   ]
 ];
@@ -325,9 +369,31 @@ function Add(obj){
 
   obj.contribLucro+=aumentoDoLucro;
   obj.comprados+=Number(qtdCompra);
+
+  //conquistas
+  if (upgrades[0].comprados >= 10000 && upgrades[1].comprados >= 2000 && upgrades[2].comprados >= 30)
+    achievementUnlock(conqs[0][2]);
+
+  if (upgrades[5].comprados >= 1000)
+    achievementUnlock(conqs[0][4]);
+
+  if ((upgrades[3].comprados + upgrades[4].comprados + upgrades[6].comprados) >= 5000 && upgrades[5].comprados == 0)
+    achievementUnlock(conqs[0][5]);
+
+  if (upgrades[6].comprados > 0 && upgrades[5].comprados == 0 && upgrades[4].comprados == 0 && upgrades[3].comprados == 0)
+    achievementUnlock(conqs[0][8]);
+
+  if (upgrades[6].comprados > clicksDados)
+    achievementUnlock(conqs[0][9]);
+
+  if (qtdCompra == 1000)
+    achievementUnlock(conqs[0][10]);
+
+  if (obj == upgrades[0] && upgrades[2].comprados >= 5000)
+    achievementUnlock(conqs[0][11]);
 }
 
-let achClicks=0,achClicks2=0;
+let achClicks=0,achClicks2=0, achClicks3=0;
 function Pc(){
   mudaDin(valorDoClique);
   clicksDados++;
@@ -352,6 +418,21 @@ function Pc(){
       achievementUnlock(conqs[1][2]);
     }
   }
+
+  achClicks3++;
+  setTimeout(function () {
+    achClicks3--;
+    if(achClicks3<=0){
+      achievementUnlock(conqs[1][3]);
+    }
+  },300000);
+
+  if (clicksDados == 100000)
+    achievementUnlock(conqs[0][6]);
+
+  if (clicksDados == 100 && dinGasto < 0.0000000001)
+    achievementUnlock(conqs[0][7]);
+
 }
 
 
@@ -966,6 +1047,7 @@ for(let i = 0; i < aleatorios.length; i++){
   aleatorios[i].addEventListener("click", function(){
     if(comprar(aleatorios[i])){
       funcoesAleatorias[i]()
+      achievementUnlock(conqs[0][3]);
       aleatorios[i].classList.add("oculto"); /* A função "fecha" é só para os popups porque ela para o tempo e tem outros efeitos
       colaterais */
     }
